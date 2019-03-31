@@ -11,23 +11,41 @@ namespace REST_StudentCollege.Controllers
     [Route("api/[controller]")]
     public class StudentCollegeController : Controller
     {
+        public double GetGPA(double score)
+        {
+            double gpa = 0;
+            if (score >= 90 && score <= 100)
+                gpa = 4;
+            else if (score >= 80 && score < 90  )
+                gpa = 3.5;
+            else if (score >= 70 && score < 80 )
+                gpa = 3;
+            else if (score >= 60 && score < 70  )
+                gpa = 2.5;
+            else if (score < 60)
+                gpa = 2;
+            else return -1;
+
+            return gpa;
+        }
         [HttpPost("registerstudent")]
         public int RegisterStudent([FromQuery]string name, [FromQuery]string state, [FromQuery]double score)
         {
             double gpa = 0;
+            
             if (state == "penang")
                 score = score * 1.05;
-
-            if (score >= 90)
-                gpa = 4;
-            else if (score < 90)
-                gpa = 3.5;
-            else if (score < 80)
-                gpa = 3;
-            else if (score < 70)
-                gpa = 2.5;
-            else if (score < 60)
-                gpa = 2;
+            gpa = GetGPA(score);
+            //if (score >= 90)
+            //    gpa = 4;
+            //else if (score < 90)
+            //    gpa = 3.5;
+            //else if (score < 80)
+            //    gpa = 3;
+            //else if (score < 70)
+            //    gpa = 2.5;
+            //else if (score < 60)
+            //    gpa = 2;
 
             string connectionString = "";//get connection string from config file.
             string storedProcName = "[dbo].[spInsertStudentRegistration]";
