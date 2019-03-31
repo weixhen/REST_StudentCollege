@@ -7,36 +7,44 @@ export class HttpMethodService {
 
   constructor(private httpcall: HttpClient) { }
 
-  http_request_get(api_url) {
-    let general_option = {
+  request_general_get(api_url) {
+    let general_options = {
       headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }),
     };
-    let data = Observable.create(observer => this.httpcall.get(api_url, general_option).subscribe(
+
+    return Observable.create(observer => this.httpcall.get(api_url, general_options).subscribe(
       data => {
         observer.next(data);
         observer.complete();
       },
       (err: HttpErrorResponse) => {
         //error logging
-      }
-    )
-    )
+        //navigate to proper
+      }));
   }
 
-  http_request_post(api_url, body) {
-    let general_option = {
+  request_general_post(api_url, body) {
+    let general_options = {
       headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }),
     };
-    return this.httpcall.post(api_url, body, general_option)
+
+    return Observable.create(observer => this.httpcall.post(api_url, body, general_options).subscribe(
+      data => {
+        observer.next(data);
+        observer.complete();
+      },
+      (err: HttpErrorResponse) => {
+        //error logging
+        //navigate to proper
+      }));
   }
 
-  validate_gpa_service(gpa) {
-    let gpa_api_url = 'http://localhost:49867/api/StudentCollege/checkgpa?gpa' + gpa;
-    this.http_request_get(gpa_api_url)
-
-  }
 }

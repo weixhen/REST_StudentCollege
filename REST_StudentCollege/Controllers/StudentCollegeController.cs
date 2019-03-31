@@ -3,58 +3,58 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace REST_StudentCollege.Controllers
 {
     [Route("api/[controller]")]
     public class StudentCollegeController : Controller
     {
-        [HttpGet("checkgpa")]
-        public int CheckGPA([FromQuery]int gpa)
+        [HttpPost("registerstudent")]
+        public int RegisterStudent([FromQuery]string name, [FromQuery]string state, [FromQuery]double score)
         {
-            try
-            {
-                if (gpa > 4)
-                {
-                    return -1;
-                } else if (gpa <= 2)
-                {
-                    return 0;
-                }
-                else return 1;
-            }
-            catch (Exception e)
-            {
-                return -1;
-            }  
-        }
+            double gpa = 0;
+            if (state == "penang")
+                score = score * 1.05;
 
-        private int SetPrioritySeating(int gpa)
-        {
+            if (score >= 90)
+                gpa = 4;
+            else if (score < 90)
+                gpa = 3.5;
+            else if (score < 80)
+                gpa = 3;
+            else if (score < 70)
+                gpa = 2.5;
+            else if (score < 60)
+                gpa = 2;
+
+            string connectionString = "";//get connection string from config file.
+            string storedProcName = "[dbo].[spInsertStudentRegistration]";
+            SqlParameter[] sqlParameter = new SqlParameter[4];
+            sqlParameter[0] = new SqlParameter("@name", SqlDbType.VarChar);
+            sqlParameter[0].Value = name;
+            sqlParameter[1] = new SqlParameter("@state", SqlDbType.VarChar);
+            sqlParameter[1].Value = state;
+            sqlParameter[2] = new SqlParameter("@score", SqlDbType.Int);
+            sqlParameter[2].Value = score;
+            sqlParameter[3] = new SqlParameter("@gpa", SqlDbType.Int);
+            sqlParameter[3].Value = gpa;
             try
             {
-                if (gpa > 4 || gpa < 4)
+                if (@gpa <= 2)
+                    return -1; //not qualified
+                else
                 {
-                    return -1;
+                    object obj = SqlHelper.ExecuteScalar(connectionString, CommandType.StoredProcedure, storedProcName, sqlParameter);
+                    return Convert.ToInt32(obj);
                 }
-                else if (gpa >= 3.5 && gpa <= 4)
-                {
-                    return 1;
-                }
-                else if (gpa >= 3 && gpa < 3.5)
-                {
-                    return 2;
-                }
-                else if (gpa > 2 && gpa < 3)
-                {
-                    return 4;
-                }
-                else return -1;
             }
             catch (Exception e)
             {
-                return -1;
-            }
+                FileLogger.WriteLog(e.Message);
+                return 0; //error
+            }  
         }
     }
 }

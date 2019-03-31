@@ -1,1 +1,31 @@
-<button (click)="validate_gpa(4)">Validate GPA</button>
+<table>
+  <tr>
+    <td>Name:</td>
+    <td><input [(ngModel)]="txtname" type="text"/></td>
+  </tr>
+  <tr>
+    <td>State:</td>
+    <td>
+      <select name="state" [(ngModel)]="ddlstate">
+        <option value="penang">Penang</option>
+        <option value="johor">Johor</option>
+        <option value="kedah">Kedah</option>
+        <option value="melaka">Melaka</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Email:</td>
+    <td><input type="email" [(ngModel)]="txtemail"/></td>
+  </tr>
+  <tr>
+    <td>Score:</td>
+    <td><input type="number" [(ngModel)]="txtscore"/></td>
+  </tr>
+  <tr>
+    <td>Resume:</td>
+    <td><input type="file" (change)="detectFiles($event)"></td>
+  </tr>
+</table>
+<!--<button (click)="testtxt()">test</button>-->
+<button (click)="register_student()">Register</button>
